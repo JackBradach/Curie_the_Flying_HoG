@@ -9,7 +9,7 @@
 
 int acc_x, acc_y, acc_z;         // accelerometer values
 
-#define IMU_SAMPLE_RATE_HZ 10
+#define IMU_SAMPLE_RATE_HZ 1
 #define MOUSE_ACCEL 50
 
 #define BLE_APPEARANCE_HID_MOUSE 962
@@ -31,7 +31,7 @@ BLEPeripheral peripheral;
  * behave like a HID.
  */
 BLEService hid_service(BLE_GATT_SVC_HID);
-BLECharCharacteristic bootModeProtocol("2A42", BLERead | BLEWriteWithoutResponse);
+BLECharCharacteristic protocol_mode("2A4E", BLERead | BLEWriteWithoutResponse);
 BLECharacteristic boot_mouse_report(BLE_GATT_CHAR_BMIR, BLERead | BLENotify, BLE_BMIR_LEN);
 BLECharacteristic hid_info("2A4A", BLERead, 4 );
 BLECharacteristic report_map("2A4B", BLERead, 50);
@@ -49,7 +49,13 @@ BLECharacteristic pnp_id("2A50", BLERead, BLE_PNP_ID_LEN);
 long ticks_last;
 unsigned char mouse_status[3] = {0, 0, 0};
 
-static const unsigned char report_map_data[] = {
+
+const unsigned char battery_level_data = 0x63;
+//unsigned char hid_info_data[] = {0x03, 0x00, 0x12, 0x01};
+const unsigned char hid_info_data[] = {0,0,0,0};
+unsigned char pnp_id_data[] = {0x02, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34};
+
+static unsigned char report_map_data[] = {
     0x05, 0x01,           // USAGE_PAGE (Generic Desktop)
     0x09, 0x02,           // USAGE (Mouse)
     0xa1, 0x01,           // COLLECTION (Application)
@@ -79,9 +85,6 @@ static const unsigned char report_map_data[] = {
     0xC0                  // END COLLECTION
 };
 
-const unsigned char battery_level_data = 0x63;
-unsigned char hid_info_data[] = {0x01, 0x12, 0x00, 0x02};
-unsigned char pnp_id_data[] = {0x02, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34};
 
 static void imu_init(void)
 {
@@ -125,33 +128,31 @@ static void ble_init(void)
     peripheral.addAttribute(hid_service);
     peripheral.setAdvertisedServiceUuid(hid_service.uuid());
 
+    boot_mouse_report.setValue(mouse_status, 3);
     peripheral.addAttribute(boot_mouse_report);
 
-    bootModeProtocol.setValue('0');
-    peripheral.addAttribute(bootModeProtocol);
+    protocol_mode.setValue(1);
+    peripheral.addAttribute(protocol_mode);
 
     /* HID Service Characteristics */
+    hid_info.setValue(hid_info_data, 4);
+    report_map.setValue(report_map_data, 50);
+    report.setValue(mouse_status, 3);
     peripheral.addAttribute(hid_info);
     peripheral.addAttribute(report_map);
     peripheral.addAttribute(controlPoint);
     peripheral.addAttribute(report);
 
     /* Battery */
+    battery_level.setValue(battery_level_data);
     peripheral.addAttribute(battery_service);
     peripheral.addAttribute(battery_level);
 
+
     /* Device Information */
+    pnp_id.setValue(pnp_id_data, 7);
     peripheral.addAttribute(devinfo_service);
     peripheral.addAttribute(pnp_id);
-
-    boot_mouse_report.setValue(mouse_status, 3);
-    battery_level.setValue(battery_level_data);
-
-
-    pnp_id.setValue(pnp_id_data, 7);
-    hid_info.setValue(hid_info_data, 4);
-    report_map.setValue(report_map_data, 50);
-    report.setValue(mouse_status, 3);
 
     // '962' is the BLE appearence category for 'mouse'
     // TODO - jbradach - make this a constant, BLE_APPEARANCE_XXX
