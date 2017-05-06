@@ -40,3 +40,7 @@ Building and Running
 Being this *is* 2017 and we *are* on the bad timeline, you'll probably not be
 too surprised to read that this doesn't work yet.  The Dockerfile does, however
 create a usable Zephyr development environment.
+
+$ make BOARD=arduino_101 ARCH=x86
+$ dfu-util -a x86_app -D outdir/arduino_101/zephyr.bin -R
+
