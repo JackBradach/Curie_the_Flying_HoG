@@ -1,5 +1,21 @@
-BOARD ?= arduino_101
-CONF_FILE = prj.conf
-QEMU_EXTRA_FLAGS = -serial unix:/tmp/bt-server-bredr
 
-include $(ZEPHYR_BASE)/Makefile.inc
+# Sensor Subsystem
+ARC_FW = arc
+
+# Application Processor
+X86_FW = x86
+
+all: arc_fw x86_fw
+
+arc_fw:
+	$(MAKE) -C $(ARC_FW) O=$(CURDIR)/outdir/$(ARC_FW)
+
+x86_fw:
+	$(MAKE) -C $(X86_FW) O=$(CURDIR)/outdir/$(X86_FW)
+
+flash: arc x86
+	$(MAKE) -C $(ARC_FW) O=outdir/$(ARC_FW) flash
+	$(MAKE) -C $(X86_FW) O=outdir/$(APP) flash
+
+pristine:
+	@rm -rf $(CURDIR)/outdir
