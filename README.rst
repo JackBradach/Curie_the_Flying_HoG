@@ -1,5 +1,5 @@
-Curie the HoG
-#############
+Curie the Flying HoG
+####################
 
 Overview
 ********
