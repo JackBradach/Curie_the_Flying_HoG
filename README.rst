@@ -4,7 +4,8 @@ Curie the HoG
 Overview
 ********
 
-http://imgur.com/a/fmCuU
+.. image:: http://i.imgur.com/1G7fxBU.jpg 
+
 One time, OK, see, what happened is one time bgordon found all these Intel TinyTiles
 hidden behind a dumpster full of Clearwire modems and brought them over and said,
 "Hey, wouldn't these make really good gesture-input devices?" So we started waving
