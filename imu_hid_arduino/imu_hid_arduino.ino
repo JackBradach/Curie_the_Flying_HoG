@@ -164,7 +164,7 @@ static void ble_init(void)
 void setup()
 {
     /* Initialize serial (actually over USB on a Curie) */
-    Serial.begin(9600);
+    Serial.begin(115200);
     while (!Serial);
 
     /* Set up the IMU */
