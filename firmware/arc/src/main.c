@@ -5,6 +5,7 @@
 #include <zephyr.h>
 
 #include "include/ipm_defs.h"
+#include "imu.h"
 //#include "bmi160.h"
 
 QUARK_SE_IPM_DEFINE(ping_ipm, IPM_CH_PING, QUARK_SE_IPM_INBOUND);
@@ -23,9 +24,6 @@ void ping_ipm_callback(void *context, u32_t id, volatile void *data)
 	ipm = device_get_binding("pong_ipm");
 	rc = ipm_send(ipm, 1, 0, NULL, 0);
 
-	ipm = device_get_binding("imu_ipm");
-	rc = ipm_send(ipm, 1, 0, NULL, 0);
-
 	ipm = device_get_binding("adc_ipm");
 	rc = ipm_send(ipm, 1, 0, NULL, 0);
 }
@@ -36,7 +34,7 @@ void main(void)
 	printk("ARC alive!\n");
 	ipm_init();
 	// Initialize IMU
-//	imu_start();
+	imu_start();
 //struct device *ipm = device_get_binding("ping_ipm");
 	// Initialize 
 }
